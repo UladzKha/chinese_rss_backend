@@ -1,11 +1,13 @@
 import Parser from "rss-parser";
 import Article, {IArticle} from "../models/Article";
 import translateText from "./translator";
-import {sources, Source} from '../config/sources';
+import {sources} from '../config/sources';
 
 const parser = new Parser();
 
-async function scanRSSFeeds(): Promise<void> {
+export async function scanRSSFeeds(): Promise<IArticle[]> {
+    const newArticles: IArticle[] = [];
+
     for (let source of sources) {
         try {
             console.log(`Scanning feed: ${source.name}`);
@@ -13,7 +15,6 @@ async function scanRSSFeeds(): Promise<void> {
 
             for (let item of feed.items) {
                 const existingArticle = await Article.findOne({url: item.link});
-
                 if (!existingArticle) {
                     const {translatedText, significance} = await translateText(item.contentSnippet || '');
                     const newArticle: IArticle = new Article({
@@ -30,11 +31,10 @@ async function scanRSSFeeds(): Promise<void> {
                     console.log(`New article saved: ${newArticle.title}`);
                 }
             }
+
         } catch (error) {
             console.error(`Error scanning feed ${source.name}: ${(error as Error).message}`);
         }
     }
+    return newArticles
 }
-
-export default scanRSSFeeds;
-
