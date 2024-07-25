@@ -7,7 +7,6 @@ const parser = new Parser();
 
 export async function scanRSSFeeds(): Promise<IArticle[]> {
     const newArticles: IArticle[] = [];
-
     for (let source of sources) {
         try {
             console.log(`Scanning feed: ${source.name}`);
@@ -22,7 +21,7 @@ export async function scanRSSFeeds(): Promise<IArticle[]> {
                         originalContent: item.contentSnippet,
                         translatedContent: translatedText,
                         url: item.link,
-                        source: feed.name,
+                        source: source.name,
                         publishDate: item.pubDate,
                         significance
                     });

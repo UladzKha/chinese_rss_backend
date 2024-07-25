@@ -6,7 +6,7 @@ export interface IArticle extends Document {
     translatedContent: string;
     url: string;
     source: string;
-    publishDate: string;
+    publishDate: Date;
     significance: 'low' | 'medium' | 'high';
 }
 
@@ -16,7 +16,7 @@ export const ArticleSchema = new Schema({
     translatedContent: {type: String, required: true},
     url: {type: String, required: true},
     source: {type: String, required: true},
-    publishDate: {type: String, required: true},
+    publishDate: {type: Date, required: true},
     significance: {type: String, enum: ['low', 'medium', 'high'], default: 'low'},
 }, {timestamps: true});
 
