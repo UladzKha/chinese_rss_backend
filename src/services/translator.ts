@@ -4,6 +4,7 @@ import {GoogleGenerativeAI} from '@google/generative-ai';
 interface TranslationResult {
     translatedText: string;
     significance: 'low' | 'medium' | 'high';
+    translatedTitle: string;
 }
 
 async function translateText(text: string): Promise<TranslationResult> {
@@ -16,7 +17,7 @@ async function translateText(text: string): Promise<TranslationResult> {
     })
 
     const prompt = `
-    Translate the following Chinese text to English and evaluate its significance.
+    Translate and summarise the following Chinese text to English and evaluate its significance, also suggest english title.
     The significance should be categorized as 'low', 'medium', or 'high' based on the following criteria:
     - How impactful the news is to the tech industry
     - How novel or groundbreaking the information is
@@ -29,6 +30,7 @@ async function translateText(text: string): Promise<TranslationResult> {
     {
       translatedText: [Your English translation here],
       significance: [low/medium/high],
+      title: [suggested english title]
     }
     `;
 
@@ -37,15 +39,13 @@ async function translateText(text: string): Promise<TranslationResult> {
         const bla = JSON.parse(result.response.text());
         const text = Array.isArray(bla.translatedText) ? bla.translatedText.join('\n') : bla.translatedText;
         const sign = Array.isArray(bla.significance) ? bla.significance.join('\n') : bla.significance;
-
-        console.log({text, sign}, 'KKLKL12')
+        const title = Array.isArray(bla.title) ? bla.title.join('\n') : bla.title;
 
         return {
             translatedText: text,
-            significance: sign as 'low' as 'low' | 'medium' | 'high'
+            significance: sign as 'low' as 'low' | 'medium' | 'high',
+            translatedTitle: title
         };
-
-
     } catch (error) {
         console.error('Error in translation and evaluation:', error);
         if (axios.isAxiosError(error)) {
@@ -53,7 +53,8 @@ async function translateText(text: string): Promise<TranslationResult> {
         }
         return {
             translatedText: '',
-            significance: 'low' // default to medium if there's an error
+            significance: 'low', // default to medium if there's an error
+            translatedTitle: ''
         };
     }
 }

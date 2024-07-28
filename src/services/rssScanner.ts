@@ -14,8 +14,15 @@ export async function scanRSSFeeds(): Promise<IArticle[]> {
 
             for (let item of feed.items) {
                 const existingArticle = await Article.findOne({url: item.link});
-                if (!existingArticle) {
-                    const {translatedText, significance} = await translateText(item.contentSnippet || '');
+                if (!existingArticle && item.contentSnippet) {
+                    const {
+                        translatedText,
+                        significance,
+                        translatedTitle
+                    } = await translateText(item.contentSnippet);
+
+                    if (!translatedText || !significance || !translatedTitle) continue;
+
                     const newArticle: IArticle = new Article({
                         title: item.title,
                         originalContent: item.contentSnippet,
@@ -23,9 +30,10 @@ export async function scanRSSFeeds(): Promise<IArticle[]> {
                         url: item.link,
                         source: source.name,
                         publishDate: item.pubDate,
-                        significance
+                        significance: significance || 'low',
+                        translatedTitle
                     });
-
+                    newArticles.push(newArticle);
                     await newArticle.save();
                     console.log(`New article saved: ${newArticle.title}`);
                 }

@@ -8,10 +8,12 @@ export interface IArticle extends Document {
     source: string;
     publishDate: Date;
     significance: 'low' | 'medium' | 'high';
+    translatedTitle: string;
 }
 
 export const ArticleSchema = new Schema({
     title: {type: String, required: true},
+    translatedTitle: {type: String, required: true},
     originalContent: {type: String, required: true},
     translatedContent: {type: String, required: true},
     url: {type: String, required: true},

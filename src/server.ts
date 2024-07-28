@@ -8,6 +8,7 @@ import cron from 'node-cron';
 import {scanRSSFeeds} from "./services/rssScanner";
 import SSE from "express-sse-ts";
 import cors from 'cors';
+import {sendMessage} from "./services/telegramService";
 
 dotenv.config();
 const app: Application = express();
@@ -52,28 +53,46 @@ export function emitUpdate(data: any) {
 // Running scanner every 15 minutes
 cron.schedule('*/15 * * * *', async () => {
     console.log("cron scheduled");
-    // const newArticles = await scanRSSFeeds();
+    const newArticles = await scanRSSFeeds();
+    console.log({newArticles}, 'NEW ARTICLES');
 
-    const mockArticles = [
-        {
-            title: "Тестовая статья 1",
-            translatedContent: "Это первая тестовая статья",
-            significance: "high",
-            url: 'https://uladz.com',
-            source: "TEST",
-            publishDate: new Date().toISOString()
-        },
-        {
-            title: "Тестовая статья 2",
-            translatedContent: "Это вторая тестовая статья",
-            significance: "medium",
-            url: 'https://uladz.com',
-            source: "TEST",
-            publishDate: new Date().toISOString()
+
+    // const mockArticles = [
+    //     {
+    //         title: "和小米渐行渐远，雷军曾站台的九号公司市值跌去七成 | 焦点分析",
+    //         translatedContent: "Это первая тестовая статья",
+    //         significance: "high",
+    //         url: 'https://uladz.com',
+    //         source: "TEST",
+    //         publishDate: new Date().toISOString()
+    //     },
+    //     {
+    //         title: "Тестовая статья 2",
+    //         translatedContent: "Это вторая тестовая статья",
+    //         significance: "medium",
+    //         url: 'https://uladz.com',
+    //         source: "TEST",
+    //         publishDate: new Date().toISOString()
+    //     }
+    // ];
+
+    if (newArticles.length) {
+        emitUpdate(newArticles);
+
+        for (const article of newArticles) {
+            console.log(article.title);
+            await sendMessage({
+                title: article.title,
+                translatedTitle: article.translatedTitle,
+                url: article.url,
+                significance: article.significance as 'low' | 'medium' | 'high',
+                translatedContent: article.translatedContent,
+                source: article.source,
+            });
         }
-    ];
+    }
 
-    if (mockArticles.length) emitUpdate(mockArticles);
+
 })
 
 
