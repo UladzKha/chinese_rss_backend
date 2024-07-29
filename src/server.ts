@@ -54,8 +54,6 @@ export function emitUpdate(data: any) {
 cron.schedule('*/15 * * * *', async () => {
     console.log("cron scheduled");
     const newArticles = await scanRSSFeeds();
-    console.log({newArticles}, 'NEW ARTICLES');
-
 
     // const mockArticles = [
     //     {
@@ -80,7 +78,6 @@ cron.schedule('*/15 * * * *', async () => {
         emitUpdate(newArticles);
 
         for (const article of newArticles) {
-            console.log(article.title);
             await sendMessage({
                 title: article.title,
                 translatedTitle: article.translatedTitle,
