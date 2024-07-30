@@ -5,8 +5,7 @@ import {sources} from '../config/sources';
 
 const parser = new Parser();
 
-export async function scanRSSFeeds(): Promise<IArticle[]> {
-    const newArticles: IArticle[] = [];
+export async function scanRSSFeeds(): Promise<void> {
     for (let source of sources) {
         try {
             console.log(`Scanning feed: ${source.name}`);
@@ -33,7 +32,7 @@ export async function scanRSSFeeds(): Promise<IArticle[]> {
                         significance: significance || 'low',
                         translatedTitle
                     });
-                    newArticles.push(newArticle);
+
                     await newArticle.save();
                     console.log(`New article saved: ${newArticle.title}`);
                 }
@@ -43,5 +42,4 @@ export async function scanRSSFeeds(): Promise<IArticle[]> {
             console.error(`Error scanning feed ${source.name}: ${(error as Error).message}`);
         }
     }
-    return newArticles
 }

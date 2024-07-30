@@ -2,7 +2,7 @@ import express, {Application} from "express";
 import dotenv from "dotenv";
 import {EventEmitter} from "node:events";
 import connectDB from "./config/db";
-import {IArticle} from "./models/Article";
+import Article, {IArticle} from "./models/Article";
 import articleRoutes from "./routes/articleRoutes";
 import cron from 'node-cron';
 import {scanRSSFeeds} from "./services/rssScanner";
@@ -46,52 +46,34 @@ app.get('/api/updates', (req, res) => {
     });
 });
 
-export function emitUpdate(data: any) {
+export function emitUpdate(data: IArticle) {
     eventEmitter.emit('update', data);
 }
 
-// Running scanner every 15 minutes
-cron.schedule('*/15 * * * *', async () => {
-    console.log("cron scheduled");
-    const newArticles = await scanRSSFeeds();
+const changeStream = Article.watch();
 
-    // const mockArticles = [
-    //     {
-    //         title: "和小米渐行渐远，雷军曾站台的九号公司市值跌去七成 | 焦点分析",
-    //         translatedContent: "Это первая тестовая статья",
-    //         significance: "high",
-    //         url: 'https://uladz.com',
-    //         source: "TEST",
-    //         publishDate: new Date().toISOString()
-    //     },
-    //     {
-    //         title: "Тестовая статья 2",
-    //         translatedContent: "Это вторая тестовая статья",
-    //         significance: "medium",
-    //         url: 'https://uladz.com',
-    //         source: "TEST",
-    //         publishDate: new Date().toISOString()
-    //     }
-    // ];
+changeStream.on('change', async (change) => {
+    if (change.operationType === 'insert') {
+        const document = change.fullDocument as IArticle;
 
-    if (newArticles.length) {
-        emitUpdate(newArticles);
+        emitUpdate(document);
 
-        for (const article of newArticles) {
-            await sendMessage({
-                title: article.title,
-                translatedTitle: article.translatedTitle,
-                url: article.url,
-                significance: article.significance as 'low' | 'medium' | 'high',
-                translatedContent: article.translatedContent,
-                source: article.source,
-            });
-        }
+        await sendMessage({
+            title: document.title,
+            translatedTitle: document.translatedTitle,
+            url: document.url,
+            significance: document.significance as 'low' | 'medium' | 'high',
+            translatedContent: document.translatedContent,
+            source: document.source
+        })
     }
+},)
 
-
+// Running scanner every 15 minutes
+cron.schedule('*/30 * * * *', async () => {
+    console.log("cron scheduled");
+    await scanRSSFeeds();
 })
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
