@@ -47,7 +47,7 @@ async function translateText(text: string): Promise<TranslationResult> {
             translatedTitle: title
         };
     } catch (error) {
-        console.error('Error in translation and evaluation:', error);
+        console.error('Error in translation and evaluation:', error, JSON.stringify({text}));
         if (axios.isAxiosError(error)) {
             console.error('Axios error details:', error.response?.data);
         }

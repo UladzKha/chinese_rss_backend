@@ -1,0 +1,9 @@
+runtime: nodejs18
+env: standard
+
+env_variables:
+  GEMINI_API_KEY: "AIzaSyBSV2IuPCRJBXHG18BYFDJC5_tj9TEppKo"
+  MONGODB_URI: "mongodb+srv://oops:sE3aR6zQ@cluster0agi.4gdxids.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0AGI"
+  TELEGRAM_BOT_TOKEN: "7368442032:AAF948amIADwAQL1-RMq4mQ1wozhAahJOx0"
+  TELEGRAM_CHANNEL: "@ai_chinese_tech_news"
+  PORT: "3000"

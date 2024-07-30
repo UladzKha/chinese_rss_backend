@@ -74,20 +74,22 @@ cron.schedule('*/15 * * * *', async () => {
     //     }
     // ];
 
-    if (newArticles.length) {
-        emitUpdate(newArticles);
+    console.log({newArticles}, 'NEW ARTICLES!!!!');
 
-        for (const article of newArticles) {
-            await sendMessage({
-                title: article.title,
-                translatedTitle: article.translatedTitle,
-                url: article.url,
-                significance: article.significance as 'low' | 'medium' | 'high',
-                translatedContent: article.translatedContent,
-                source: article.source,
-            });
-        }
-    }
+    // if (newArticles.length) {
+    //     emitUpdate(newArticles);
+    //
+    //     for (const article of newArticles) {
+    //         await sendMessage({
+    //             title: article.title,
+    //             translatedTitle: article.translatedTitle,
+    //             url: article.url,
+    //             significance: article.significance as 'low' | 'medium' | 'high',
+    //             translatedContent: article.translatedContent,
+    //             source: article.source,
+    //         });
+    //     }
+    // }
 
 
 })
