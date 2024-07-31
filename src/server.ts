@@ -69,7 +69,7 @@ changeStream.on('change', async (change) => {
     }
 },)
 
-// Running scanner every 15 minutes
+// Running scanner every 30 minutes
 cron.schedule('*/30 * * * *', async () => {
     console.log("cron scheduled");
     await scanRSSFeeds();

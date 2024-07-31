@@ -36,10 +36,10 @@ async function translateText(text: string): Promise<TranslationResult> {
 
     try {
         const result = await model.generateContent(prompt);
-        const bla = JSON.parse(result.response.text());
-        const text = Array.isArray(bla.translatedText) ? bla.translatedText.join('\n') : bla.translatedText;
-        const sign = Array.isArray(bla.significance) ? bla.significance.join('\n') : bla.significance;
-        const title = Array.isArray(bla.title) ? bla.title.join('\n') : bla.title;
+        const respText = JSON.parse(result.response.text());
+        const text = Array.isArray(respText.translatedText) ? respText.translatedText.join('\n') : respText.translatedText;
+        const sign = Array.isArray(respText.significance) ? respText.significance.join('\n') : respText.significance;
+        const title = Array.isArray(respText.title) ? respText.title.join('\n') : respText.title;
 
         return {
             translatedText: text,
