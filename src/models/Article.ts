@@ -9,6 +9,7 @@ export interface IArticle extends Document {
     publishDate: Date;
     significance: 'low' | 'medium' | 'high';
     translatedTitle: string;
+    tags: string[];
 }
 
 export const ArticleSchema = new Schema({
@@ -20,6 +21,7 @@ export const ArticleSchema = new Schema({
     source: {type: String, required: true},
     publishDate: {type: Date, required: true},
     significance: {type: String, enum: ['low', 'medium', 'high'], default: 'low'},
+    tags: {type: Array, required: true},
 }, {timestamps: true});
 
 

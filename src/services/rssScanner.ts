@@ -17,7 +17,8 @@ export async function scanRSSFeeds(): Promise<void> {
                     const {
                         translatedText,
                         significance,
-                        translatedTitle
+                        translatedTitle,
+                        tags
                     } = await translateText(item.contentSnippet);
 
                     if (!translatedText || !significance || !translatedTitle) continue;
@@ -30,7 +31,8 @@ export async function scanRSSFeeds(): Promise<void> {
                         source: source.name,
                         publishDate: item.pubDate,
                         significance: significance || 'low',
-                        translatedTitle
+                        translatedTitle,
+                        tags
                     });
 
                     await newArticle.save();
