@@ -1,10 +1,11 @@
-import axios from "axios";
 import {GoogleGenerativeAI} from '@google/generative-ai';
+import axios from "axios";
 
 interface TranslationResult {
     translatedText: string;
     significance: 'low' | 'medium' | 'high';
     translatedTitle: string;
+    tags: string[];
 }
 
 async function translateText(text: string): Promise<TranslationResult> {
@@ -17,7 +18,7 @@ async function translateText(text: string): Promise<TranslationResult> {
     })
 
     const prompt = `
-    Translate and summarise the following Chinese text to English and evaluate its significance, also suggest english title.
+    Translate and summarise the following Chinese text to English and evaluate its significance, suggest english title, also generate three tags.
     The significance should be categorized as 'low', 'medium', or 'high' based on the following criteria:
     - How impactful the news is to the tech industry
     - How novel or groundbreaking the information is
@@ -28,9 +29,10 @@ async function translateText(text: string): Promise<TranslationResult> {
 
     Respond in the following JSON format:
     {
-      translatedText: [Your English translation here],
-      significance: [low/medium/high],
-      title: [suggested english title]
+      translatedText: Your English translation here,
+      significance: low/medium/high,
+      title: suggested english title,
+      tags: [tags]
     }
     `;
 
@@ -44,7 +46,8 @@ async function translateText(text: string): Promise<TranslationResult> {
         return {
             translatedText: text,
             significance: sign as 'low' as 'low' | 'medium' | 'high',
-            translatedTitle: title
+            translatedTitle: title,
+            tags: respText.tags
         };
     } catch (error) {
         console.error('Error in translation and evaluation:', error, JSON.stringify({text}));
@@ -54,7 +57,8 @@ async function translateText(text: string): Promise<TranslationResult> {
         return {
             translatedText: '',
             significance: 'low', // default to medium if there's an error
-            translatedTitle: ''
+            translatedTitle: '',
+            tags: []
         };
     }
 }
